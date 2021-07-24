@@ -4,7 +4,7 @@
 
 In order to deploy the authentication system, virtual endpoints will need to be employed.
 
-The corresponding middleware for browser login flow are `virtualLogin.js` and `virtualLogout.js`.
+The corresponding middleware for browser login flow are `virtualLogin.js` and `virtualLogout.js`. In particular, when the user is authenticated via the browser log-in flow, an `httponly` `session_id` cookie is set, which helps authenticate the users.
 
 The middleware for API-based token flow is `virtualToken.js`. This exposes a `/POST /auth/token` endpoint that retrieves an `id_token` when username and password are provided.
 
@@ -17,9 +17,11 @@ No middleware is required.
 
 ## Deployment of API services that are used in frontend apps
 
-You should specify `BackendAuthMiddleware.js` as the pre-middleware. The purpose of this middleware is to correctly parse out the `session_id` cookie from the browser requests.
+No middleware is required if the frontend apps can correctly include `session_id` as its Authentication header when making API requests.
 
-This middleware can be omitted if the frontend apps correctly include the `session_id` as the `Authentication` header when making API requests, this may not be possible, if the `session_id` cookie is set to `HttpOnly`, which would make it unavailble to client-side JavaScript.
+This may not always be possible because by default, the `session_id` cookie is set to `httponly`. You may remove the `httponly` attribute from the `session_id` cookie, in which case, it will be available for use to JavaScript.
+
+Otherwise, you should specify `BackendAuthMiddleware.js` as the pre-middleware. The purpose of this middleware is to correctly parse out the `session_id` cookie from the browser request headers.
 
 ## Deployment of frontend applications
 
